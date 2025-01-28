@@ -5,20 +5,32 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    container_name: backend_service
     ports:
       - "8000:8000"
     volumes:
       - ./backend:/app
     environment:
+      - OPENAI_API_KEY=your_openai_api_key  # OpenAI API anahtarı burada!
       - GOOGLE_APPLICATION_CREDENTIALS=/app/path_to_your_google_service_account.json
       - EMAIL_ADDRESS=your_email@example.com
       - EMAIL_PASSWORD=your_email_password
+    depends_on:
+      - redis  # Eğer Redis veya başka bir servis eklenirse, bu bağımlılık belirtilebilir
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    container_name: frontend_service
     ports:
       - "3000:3000"
     volumes:
       - ./frontend:/usr/src/app
+
+  redis:
+    image: redis:6.2
+    container_name: redis_service
+    ports:
+      - "6379:6379"
+
