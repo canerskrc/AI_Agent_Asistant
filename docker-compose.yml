@@ -10,7 +10,9 @@ services:
     volumes:
       - ./backend:/app
     environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/path_to_your_google_service_account.json
+      - EMAIL_ADDRESS=your_email@example.com
+      - EMAIL_PASSWORD=your_email_password
 
   frontend:
     build:

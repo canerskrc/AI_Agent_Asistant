@@ -1,83 +1,83 @@
+// Yeni state ve işlevler eklendi
 import React, { useState } from "react";
 import axios from "axios";
 
 function App() {
-  const [query, setQuery] = useState("");
+  const [sheetName, setSheetName] = useState("");
+  const [sheetData, setSheetData] = useState("");
+  const [emailRecipient, setEmailRecipient] = useState("");
+  const [emailSubject, setEmailSubject] = useState("");
+  const [emailMessage, setEmailMessage] = useState("");
   const [response, setResponse] = useState("");
-  const [isListening, setIsListening] = useState(false);
 
-  const handleSpeechRecognition = () => {
-    const recognition = new (window.SpeechRecognition ||
-      window.webkitSpeechRecognition)();
-    recognition.lang = "en-US";
-    recognition.interimResults = false;
-
-    recognition.onstart = () => {
-      setIsListening(true);
-    };
-
-    recognition.onresult = (event) => {
-      const spokenQuery = event.results[0][0].transcript;
-      setQuery(spokenQuery);
-      handleQuery(spokenQuery);
-    };
-
-    recognition.onerror = (event) => {
-      console.error("Speech recognition error:", event.error);
-    };
-
-    recognition.onend = () => {
-      setIsListening(false);
-    };
-
-    recognition.start();
+  const addToSheet = async () => {
+    try {
+      const res = await axios.post("http://localhost:8000/add_to_sheet", {
+        sheet_name: sheetName,
+        data: JSON.parse(sheetData),
+      });
+      setResponse(res.data.message);
+    } catch (error) {
+      setResponse("Error: " + error.message);
+    }
   };
 
-  const handleQuery = async (inputQuery) => {
+  const sendEmail = async () => {
     try {
-      const res = await axios.post("http://localhost:8000/query", {
-        query: inputQuery,
-        context: { sector: "general" },
+      const res = await axios.post("http://localhost:8000/send_email", {
+        recipient: emailRecipient,
+        subject: emailSubject,
+        message: emailMessage,
       });
-      setResponse(res.data.response);
+      setResponse(res.data.message);
     } catch (error) {
-      setResponse("An error occurred: " + error.message);
+      setResponse("Error: " + error.message);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
-      <div className="bg-white p-6 rounded-lg shadow-md max-w-md w-full">
-        <h1 className="text-2xl font-bold mb-4 text-center">AI Agent Assistant</h1>
+    <div>
+      <h1>Google Sheets and Email Integration</h1>
+      
+      <div>
+        <h2>Add to Google Sheet</h2>
+        <input
+          type="text"
+          placeholder="Sheet Name"
+          value={sheetName}
+          onChange={(e) => setSheetName(e.target.value)}
+        />
         <textarea
-          className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Type your query here..."
-          rows={4}
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          placeholder='Data as JSON (e.g., {"Name": "John", "Age": 30})'
+          value={sheetData}
+          onChange={(e) => setSheetData(e.target.value)}
         ></textarea>
-        <button
-          onClick={() => handleQuery(query)}
-          disabled={!query.trim()}
-          className="mt-4 w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 transition-colors"
-        >
-          Submit
-        </button>
-        <button
-          onClick={handleSpeechRecognition}
-          className={`mt-2 w-full py-2 px-4 ${
-            isListening ? "bg-gray-400" : "bg-green-500"
-          } text-white font-semibold rounded-lg shadow-md hover:bg-green-600 transition-colors`}
-        >
-          {isListening ? "Listening..." : "Start Voice Command"}
-        </button>
-        {response && (
-          <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-            <h2 className="text-lg font-semibold">Response:</h2>
-            <p className="mt-2 text-gray-700">{response}</p>
-          </div>
-        )}
+        <button onClick={addToSheet}>Add to Sheet</button>
       </div>
+      
+      <div>
+        <h2>Send Email</h2>
+        <input
+          type="email"
+          placeholder="Recipient"
+          value={emailRecipient}
+          onChange={(e) => setEmailRecipient(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Subject"
+          value={emailSubject}
+          onChange={(e) => setEmailSubject(e.target.value)}
+        />
+        <textarea
+          placeholder="Message"
+          value={emailMessage}
+          onChange={(e) => setEmailMessage(e.target.value)}
+        ></textarea>
+        <button onClick={sendEmail}>Send Email</button>
+      </div>
+
+      {response && <p>{response}</p>}
     </div>
   );
 }
