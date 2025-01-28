@@ -11,12 +11,12 @@ services:
     volumes:
       - ./backend:/app
     environment:
-      - OPENAI_API_KEY=your_openai_api_key  # OpenAI API anahtarı burada!
+      - OPENAI_API_KEY=your_openai_api_key  
       - GOOGLE_APPLICATION_CREDENTIALS=/app/path_to_your_google_service_account.json
       - EMAIL_ADDRESS=your_email@example.com
       - EMAIL_PASSWORD=your_email_password
     depends_on:
-      - redis  # Eğer Redis veya başka bir servis eklenirse, bu bağımlılık belirtilebilir
+      - redis  
 
   frontend:
     build:
