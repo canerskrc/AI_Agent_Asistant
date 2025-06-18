@@ -6,3 +6,5 @@ gspread
 oauth2client
 smtplib
 email
+Flask
+Flask-SQLAlchemy
