@@ -167,3 +167,6 @@ docker-compose up --build
 ---
 
 Feel free to explore and contribute! 🚀
+
+## License
+This project is licensed under the [MIT License](LICENSE).
